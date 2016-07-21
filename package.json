@@ -18,6 +18,7 @@
     "offlinefirst"
   ],
   "author": "Gregor Martynus <gregor@martynus.net>",
+  "version": "1.2.0",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/gr2m/appcache-nanny/issues"
