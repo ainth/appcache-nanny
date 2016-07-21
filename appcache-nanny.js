@@ -61,12 +61,14 @@
 })(this, function (applicationCache, Events) {
   var DEFAULT_MANIFEST_LOADER_PATH = '/appcache-loader.html'
   var DEFAULT_CHECK_INTERVAL = 30000
+  var DEFAULT_SILENT_WHEN_UPDATE_READY = true
 
   var appCacheNanny = new Events()
   var nannyOptions = {
     loaderPath: DEFAULT_MANIFEST_LOADER_PATH,
     checkInterval: DEFAULT_CHECK_INTERVAL,
-    offlineCheckInterval: DEFAULT_CHECK_INTERVAL
+    offlineCheckInterval: DEFAULT_CHECK_INTERVAL,
+    silentWhenUpdateReady: DEFAULT_SILENT_WHEN_UPDATE_READY,
   }
 
   var iframe
@@ -310,7 +312,7 @@
   // keep looking for another update, but we stop triggering events.
   //
   function trigger (eventName, event) {
-    if (hasUpdateFlag) return
+    if (hasUpdateFlag && appCacheNanny.get('silentWhenUpdateReady')) return
     appCacheNanny.trigger(eventName, event)
   }
 
@@ -331,11 +333,14 @@
       return
     }
 
-    if (!hasUpdateFlag) {
-      hasUpdateFlag = true
-      // don't use trigger here, otherwise the event wouldn't get triggered
+    if (!hasUpdateFlag || !appCacheNanny.get('silentWhenUpdateReady')) {
       appCacheNanny.trigger('updateready')
     }
+
+    if (!hasUpdateFlag) {
+      hasUpdateFlag = true
+    }
+
     applicationCache.swapCache()
   }
 
